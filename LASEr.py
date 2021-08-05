@@ -1,10 +1,11 @@
 import os
-import queue
 import datetime
 import requests
 import threading
-
+import platform
 writing = []
+sys = platform.system()
+mac=""
 
 class downloadThread (threading.Thread):
     def __init__(self, id):
@@ -15,38 +16,34 @@ class downloadThread (threading.Thread):
         try:
             download(self.id)
         except Exception:
-            log(id, "ERROR, MESSAGE:"+str(Exception))
-
-
+            log(self.id, "ERROR")
+            raise Exception
+            
 def download(id):
-    log(id, "downloading")
     url = "http://cloud.linspirer.com:880/download?appid=" + \
-        str(id)+"&swdid=1"
-    res = requests.get(url)
+        str(id)+"&swdid="+mac
+    res = requests.get(url,timeout=None)
 
     if len(res.content) < 100:
-        log(id, "is not an apk")
-        output(str(id), "NULL")
         return
-    else:
-        log(id, "is an apk, writing")
-
     with open("./packages/"+str(id)+".apk", "wb") as f:
         f.write(res.content)
-
-    log(id, "wrote, analyzing")
 
     text = os.popen("java -jar GetAPKInfo.jar ./packages/" +
                     str(id)+".apk").read()
     packageName = text[text.find(
         "包名: ")+4:text.find("\n", text.find("包名: ")+4)]
-
-    log(id, "analyzed, package name "+packageName)
+    versionName = text[text.find(
+        "版本名: ")+4:text.find("\n", text.find("版本名: ")+4)]
+    
+    log(id, "package name "+packageName+' '+versionName)
+    
     f.close()
-    output(str(id), packageName)
-
-    os.system("rm ./packages/"+str(id)+".apk")
-
+    output(str(id), packageName+' '+versionName)
+    if sys == "Windows":
+        os.system("del packages\\"+str(id)+".apk")
+    else :
+        os.system("rm ./packages/"+str(id)+".apk")
 
 def log(id, message):
     print("["+datetime.datetime.now().strftime("%H:%M:%S")+"]" +
@@ -75,7 +72,7 @@ if __name__ == "__main__":
         if len(writing):
             f = open("./result.txt", "a")
             f.write("http://cloud.linspirer.com:880/download?appid=" +
-                    writing[0][0]+"&swdid=1 \t"+writing[0][1]+"\n")
+                    writing[0][0]+"&swdid="+mac+" \t"+writing[0][1]+"\n")
             writing.pop(0)
             f.close()
 
