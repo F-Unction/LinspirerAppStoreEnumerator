@@ -26,6 +26,9 @@ os.system("rm ./packages/"+str(id)+".apk")
 ### Contributor
 **ljlVink**
 > 新增系统判断
+> 
 > NULL不输出到文件中
+> 
 > 控制台输出优化
+> 
 > 异常判断并抛出 
