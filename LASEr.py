@@ -5,13 +5,11 @@ import threading
 import platform
 writing = []
 sys = platform.system()
-mac=""
-
+mac="4a"
 class downloadThread (threading.Thread):
     def __init__(self, id):
         threading.Thread.__init__(self)
         self.id = id
-
     def run(self):
         try:
             download(self.id)
@@ -23,8 +21,8 @@ def download(id):
     url = "http://cloud.linspirer.com:880/download?appid=" + \
         str(id)+"&swdid="+mac
     res = requests.get(url,timeout=None)
-
     if len(res.content) < 100:
+        print("id:",str(id),"null")
         return
     with open("./packages/"+str(id)+".apk", "wb") as f:
         f.write(res.content)
