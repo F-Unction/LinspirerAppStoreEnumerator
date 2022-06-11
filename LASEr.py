@@ -1,11 +1,21 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
 import os
 import datetime
+import time
 import requests
 import threading
 import platform
+import argparse
+
 writing = []
 sys = platform.system()
 mac="4a"
+email='null'
+header={
+		'Range': 'bytes=0-0',
+        'user-agent': "okhttp/3.10.0"
+		}
 class downloadThread (threading.Thread):
     def __init__(self, id):
         threading.Thread.__init__(self)
@@ -18,12 +28,15 @@ class downloadThread (threading.Thread):
             raise Exception
             
 def download(id):
-    url = "http://cloud.linspirer.com:880/download?appid=" + \
-        str(id)+"&swdid="+mac
-    res = requests.get(url,timeout=None)
-    if len(res.content) < 100:
+    url = "https://cloud.linspirer.com:883/download.php?email="+email+"&appid="+str(id)+"&swdid="+mac+"&version=140"
+    res = requests.head(url, stream=True,headers=header)
+    try:
+        url=res.headers['Location']
+        print(url) 
+    except:
         print("id:",str(id),"null")
         return
+    res = requests.get(url,timeout=None)
     with open("./packages/"+str(id)+".apk", "wb") as f:
         f.write(res.content)
 
@@ -39,7 +52,8 @@ def download(id):
     f.close()
     output(str(id), packageName+' '+versionName)
     if sys == "Windows":
-        os.system("del packages\\"+str(id)+".apk")
+        pass
+        #os.system("del packages\\"+str(id)+".apk")
     else :
         os.system("rm ./packages/"+str(id)+".apk")
 
@@ -54,10 +68,18 @@ def output(id, package):
 
 
 if __name__ == "__main__":
-    beg = int(input("begin with\t>"))
-    end = int(input("end with\t>"))
-    threads = int(input("thread number\t>"))
+    parser = argparse.ArgumentParser(description='请传入三个整数')
+    parser.add_argument('begin_id', type=int, help='起始id')
+    parser.add_argument('end_id', type=int, help='结束id')
+    parser.add_argument('threads', type=int, help='线程数')
+    parser.add_argument('run_time', nargs='?', type=int, help='运行时间(秒 可不填)',default=None)
+    args = parser.parse_args()
+
+    beg = args.begin_id
+    end = args.end_id
+    threads = args.threads
     now = beg-1
+    run_time = args.run_time
 
     if not os.path.exists("./packages"):
         os.mkdir("./packages")
@@ -69,10 +91,12 @@ if __name__ == "__main__":
 
         if len(writing):
             f = open("./result.txt", "a")
-            f.write("http://cloud.linspirer.com:880/download?appid=" +
-                    writing[0][0]+"&swdid="+mac+" \t"+writing[0][1]+"\n")
+            f.write(writing[0][0]+" \t"+writing[0][1]+"\n")
             writing.pop(0)
             f.close()
-
-    while threading.activeCount() != 0:
-        pass
+    if run_time is None:
+        while threading.activeCount() != 0:
+            pass
+    else:
+        time.sleep(run_time)
+        exit(0)
