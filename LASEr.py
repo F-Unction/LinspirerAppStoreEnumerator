@@ -40,17 +40,17 @@ def download(id):
     with open("./packages/"+str(id)+".apk", "wb") as f:
         f.write(res.content)
 
-    text = os.popen("java -jar GetAPKInfo.jar ./packages/" +
+    text = os.popen("java -jar GetAPKInfo_EN.jar ./packages/" +
                     str(id)+".apk").read()
     packageName = text[text.find(
-        "PackageName: ")+4:text.find("\n", text.find("PackageName: ")+4)]
+        "PackageName: ")+12:text.find("\n", text.find("PackageName: ")+12)]
     versionName = text[text.find(
-        "Version: ")+4:text.find("\n", text.find("Version: ")+4)]
+        "Version: ")+8:text.find("\n", text.find("Version: ")+8)]
     
-    log(id, "package name "+packageName+' '+versionName)
+    log(id, "PackageName "+packageName+' '+versionName)
     
     f.close()
-    output(str(id), packageName+' '+versionName)
+    output(url+"  "+str(id), packageName+' '+versionName)
     if sys == "Windows":
         os.system("del packages\\"+str(id)+".apk")
     else :
