@@ -45,7 +45,7 @@ jobs:
       - name: 开跑
         run: python ./LASEr.py ${{ github.event.inputs.Start }} ${{ github.event.inputs.End }} ${{ github.event.inputs.Threads }} ${{ github.event.inputs.Time }}
 
-        - name: 移动result.txt
+      - name: 移动result.txt
         run: |
           move ./result.txt ./result/result.txt
 
