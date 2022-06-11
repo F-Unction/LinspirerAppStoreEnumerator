@@ -43,17 +43,16 @@ def download(id):
     text = os.popen("java -jar GetAPKInfo.jar ./packages/" +
                     str(id)+".apk").read()
     packageName = text[text.find(
-        "包名: ")+4:text.find("\n", text.find("包名: ")+4)]
+        "PackageName: ")+4:text.find("\n", text.find("PackageName: ")+4)]
     versionName = text[text.find(
-        "版本名: ")+4:text.find("\n", text.find("版本名: ")+4)]
+        "Version: ")+4:text.find("\n", text.find("Version: ")+4)]
     
     log(id, "package name "+packageName+' '+versionName)
     
     f.close()
     output(str(id), packageName+' '+versionName)
     if sys == "Windows":
-        pass
-        #os.system("del packages\\"+str(id)+".apk")
+        os.system("del packages\\"+str(id)+".apk")
     else :
         os.system("rm ./packages/"+str(id)+".apk")
 
@@ -68,11 +67,11 @@ def output(id, package):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='请传入三个整数')
-    parser.add_argument('begin_id', type=int, help='起始id')
-    parser.add_argument('end_id', type=int, help='结束id')
-    parser.add_argument('threads', type=int, help='线程数')
-    parser.add_argument('run_time', nargs='?', type=int, help='运行时间(秒 可不填)',default=None)
+    parser = argparse.ArgumentParser(description='Please run with at least 3 integers.')
+    parser.add_argument('begin_id', type=int, help='Start_id')
+    parser.add_argument('end_id', type=int, help='End_id')
+    parser.add_argument('threads', type=int, help='Threads Count')
+    parser.add_argument('run_time', nargs='?', type=int, help='Run_Time (sec)',default=None)
     args = parser.parse_args()
 
     beg = args.begin_id
