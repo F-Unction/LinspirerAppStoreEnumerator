@@ -7,6 +7,7 @@ import requests
 import threading
 import platform
 import argparse
+import random
 
 writing = []
 sys = platform.system()
@@ -28,11 +29,13 @@ class downloadThread (threading.Thread):
             raise Exception
             
 def download(id):
-    url = "https://cloud.linspirer.com:883/download.php?email="+email+"&appid="+str(id)+"&swdid="+mac+"&version=140"
+    url = "https://cloud.linspirer.com:883/download.php?email="+email+"&appid="+str(id)+"&swdid="+mac+"&version="+str(random.randint(1,9000000))
+    realurl="Null"
     res = requests.head(url, stream=True,headers=header)
     try:
         url=res.headers['Location']
         print(url) 
+        realurl=url
     except:
         print("id:",str(id),"null")
         return
@@ -43,14 +46,14 @@ def download(id):
     text = os.popen("java -jar GetAPKInfo_EN.jar ./packages/" +
                     str(id)+".apk").read()
     packageName = text[text.find(
-        "PackageName: ")+12:text.find("\n", text.find("PackageName: ")+12)]
+        "PackageName: ")+13:text.find("\n", text.find("PackageName: ")+13)]
     versionName = text[text.find(
         "Version: ")+8:text.find("\n", text.find("Version: ")+8)]
     
     log(id, "PackageName "+packageName+' '+versionName)
     
     f.close()
-    output(url+"  "+str(id), packageName+' '+versionName)
+    output(str(id), realurl ,packageName+','+versionName[1:])
     if sys == "Windows":
         os.system("del packages\\"+str(id)+".apk")
     else :
@@ -60,12 +63,9 @@ def log(id, message):
     print("["+datetime.datetime.now().strftime("%H:%M:%S")+"]" +
           "["+str(id)+"]:", message)
 
-
-def output(id, package):
+def output(id, link,package):
     global writing
-    writing.append([id, package])
-
-
+    writing.append([id,link, package])
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Please run with at least 3 integers.')
     parser.add_argument('begin_id', type=int, help='Start_id')
@@ -89,8 +89,8 @@ if __name__ == "__main__":
             now = now+1
 
         if len(writing):
-            f = open("./result.txt", "a")
-            f.write(writing[0][0]+" \t"+writing[0][1]+"\n")
+            f = open("./result.csv", "a")            
+            f.write(writing[0][0]+","+writing[0][1]+","+writing[0][2]+"\n")
             writing.pop(0)
             f.close()
     if run_time is None:
