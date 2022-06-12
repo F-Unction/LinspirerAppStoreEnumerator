@@ -45,10 +45,10 @@ jobs:
       - name: 开跑
         run: python ./LASEr.py ${{ github.event.inputs.Start }} ${{ github.event.inputs.End }} ${{ github.event.inputs.Threads }} ${{ github.event.inputs.Time }}
 
-      - name: 移动result.txt
+      - name: 移动result.csv
         run: |
           md result
-          move ./result.txt ./result/result.txt
+          move ./result.csv ./result/result.csv
 
       - name: 上传Artifact
         uses: actions/upload-artifact@v2
