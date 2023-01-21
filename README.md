@@ -1,3 +1,7 @@
+# STOP USING THIS
+# THIS IS A PIECE OF SHIT COMPARED TO https://github.com/F-Unction/LinspirerAppStoreEnumerator.NET
+
+
 # LinspirerAppStoreEnumerator
 
 ### 介绍
